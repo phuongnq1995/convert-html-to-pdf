@@ -10,6 +10,8 @@ import java.io.OutputStream;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,8 +26,21 @@ public class TestController {
 	@Autowired
     ServletContext context;
 	
+	@Autowired
+	NotificationService service;
+	
 	@RequestMapping(value="/home")
 	public String getView() {
+		
+		Page<NotificationEntity> pages = service.findNotificationEntity();
+
+		System.out.println(pages.getTotalElements());
+		System.out.println(pages.getSize());
+		System.out.println(pages.getNumber());
+		System.out.println("####################");
+		for(NotificationEntity n : pages.getContent()) {
+			System.out.println(n.getName());
+		}
 		return "welcome";
 	}
 	
