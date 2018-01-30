@@ -12,9 +12,20 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.social.connect.Connection;
+import org.springframework.social.connect.ConnectionRepository;
+import org.springframework.social.facebook.api.Facebook;
+import org.springframework.social.facebook.api.PagedList;
+import org.springframework.social.facebook.api.Post;
+import org.springframework.social.facebook.api.User;
+import org.springframework.social.facebook.api.impl.FacebookTemplate;
+import org.springframework.social.facebook.connect.FacebookConnectionFactory;
+import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -28,6 +39,34 @@ public class TestController {
 	
 	@Autowired
 	NotificationService service;
+	
+    private Facebook facebook;
+    private ConnectionRepository connectionRepository;
+
+    public TestController(Facebook facebook, ConnectionRepository connectionRepository) {
+        this.facebook = facebook;
+        this.connectionRepository = connectionRepository;
+    }
+    
+    @RequestMapping(value="/fb")
+    public String helloFacebook(Model model, @RequestParam String token) {
+        if (token == null) {
+            return "redirect:/connect/facebook";
+        }
+        facebook = new FacebookTemplate(token);
+        String[] fields = { "id", "about", "age_range",
+        		"birthday", "context", "cover", "currency", "devices",
+        		"education", "email", "favorite_athletes", "favorite_teams",
+        		"first_name", "gender", "hometown", "inspirational_people", "installed",
+        		"install_type", "is_verified", "languages", "last_name", "link", "locale",
+        		"location", "meeting_for", "middle_name", "name", "name_format", "political",
+        		"quotes", "payment_pricepoints", "relationship_status", "religion",
+        		"security_settings", "significant_other", "sports", "test_group", "timezone",
+        		"third_party_id", "updated_time", "verified", "video_upload_limits",
+        		"viewer_can_send_gift", "website", "work"};
+        System.out.println(facebook.fetchObject("me", String.class, fields));
+        return "welcome";
+    }
 	
 	@RequestMapping(value="/home")
 	public String getView() {
